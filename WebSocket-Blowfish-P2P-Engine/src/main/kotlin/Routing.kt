@@ -14,21 +14,7 @@ import kotlin.time.Duration.Companion.seconds
 fun Application.configureRouting() {
     routing {
         get("/") {
-            val p_s: Pair<IntArray, Array<IntArray>> = utils.extractBlowfishConstants(utils.pi_hex)
-            val sBoxesString = p_s.second.joinToString(
-                separator = ",\n",
-                prefix = "val s = arrayOf(\n",
-                postfix = "\n)"
-            ) { singleSBox ->
-                singleSBox.joinToString(
-                    separator = ", ",
-                    prefix = "    intArrayOf(",
-                    postfix = ")"
-                ) { value ->
-                    String.format("0x%08x.toInt()", value)
-                }
-            }
-            call.respondText(sBoxesString)
+            call.respondText("App is UP!")
         }
     }
 }
