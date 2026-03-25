@@ -1,6 +1,6 @@
 package com.example.blowfish.blowfish
 
-fun f(s: Array<Array<Int>>, x: Int): Int {
+fun f(s: Array<IntArray>, x: Int): Int {
     val highByte = (x ushr 24) and 0xff
     val secondByte = (x ushr 16) and 0xff
     val thirdByte = (x ushr 8) and 0xff

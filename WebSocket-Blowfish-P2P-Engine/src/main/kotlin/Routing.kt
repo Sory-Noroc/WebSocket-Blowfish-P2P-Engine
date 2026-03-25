@@ -1,5 +1,6 @@
 package com.example.blowfish
 
+import com.example.blowfish.blowfish.BlowfishEngine
 import com.example.blowfish.blowfish.utils
 import io.ktor.http.ContentType
 import io.ktor.server.application.*
@@ -14,7 +15,15 @@ import kotlin.time.Duration.Companion.seconds
 fun Application.configureRouting() {
     routing {
         get("/") {
-            call.respondText("App is UP!")
+            val encryption = BlowfishEngine.encrypt(4444)
+            val decryption = BlowfishEngine.decrypt(encryption)
+            val responsePayload = """
+                App is UP!
+                Encrypted: $encryption
+                Decrypted: $decryption
+            """.trimIndent()
+
+            call.respondText(responsePayload)
         }
     }
 }

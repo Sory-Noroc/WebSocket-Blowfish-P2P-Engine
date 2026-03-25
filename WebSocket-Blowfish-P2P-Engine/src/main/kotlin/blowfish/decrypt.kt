@@ -1,6 +1,6 @@
 package com.example.blowfish.blowfish
 
-fun decrypt(s: Array<Array<Int>>, p: Array<Int>, leftHalf: Int, rightHalf: Int): Pair<Int, Int> {
+fun decrypt(s: Array<IntArray>, p: IntArray, leftHalf: Int, rightHalf: Int): Pair<Int, Int> {
     var L = leftHalf
     var R = rightHalf
     for (round in 17 downTo 2) {

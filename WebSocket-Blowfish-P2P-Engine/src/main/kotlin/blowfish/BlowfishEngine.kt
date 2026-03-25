@@ -2,6 +2,7 @@ package com.example.blowfish.blowfish
 
 
 object BlowfishEngine {
+    var initialized = false
 
     val p = intArrayOf(
         0x243f6a88,         0x85a308d3.toInt(), 0x13198a2e,         0x03707344,
@@ -18,26 +19,30 @@ object BlowfishEngine {
         intArrayOf(0x3a39ce37.toInt(), 0xd3faf5cf.toInt(), 0xabc27737.toInt(), 0x5ac52d1b.toInt(), 0x5cb0679e.toInt(), 0x4fa33742.toInt(), 0xd3822740.toInt(), 0x99bc9bbe.toInt(), 0xd5118e9d.toInt(), 0xbf0f7315.toInt(), 0xd62d1c7e.toInt(), 0xc700c47b.toInt(), 0xb78c1b6b.toInt(), 0x21a19045.toInt(), 0xb26eb1be.toInt(), 0x6a366eb4.toInt(), 0x5748ab2f.toInt(), 0xbc946e79.toInt(), 0xc6a376d2.toInt(), 0x6549c2c8.toInt(), 0x530ff8ee.toInt(), 0x468dde7d.toInt(), 0xd5730a1d.toInt(), 0x4cd04dc6.toInt(), 0x2939bbdb.toInt(), 0xa9ba4650.toInt(), 0xac9526e8.toInt(), 0xbe5ee304.toInt(), 0xa1fad5f0.toInt(), 0x6a2d519a.toInt(), 0x63ef8ce2.toInt(), 0x9a86ee22.toInt(), 0xc089c2b8.toInt(), 0x43242ef6.toInt(), 0xa51e03aa.toInt(), 0x9cf2d0a4.toInt(), 0x83c061ba.toInt(), 0x9be96a4d.toInt(), 0x8fe51550.toInt(), 0xba645bd6.toInt(), 0x2826a2f9.toInt(), 0xa73a3ae1.toInt(), 0x4ba99586.toInt(), 0xef5562e9.toInt(), 0xc72fefd3.toInt(), 0xf752f7da.toInt(), 0x3f046f69.toInt(), 0x77fa0a59.toInt(), 0x80e4a915.toInt(), 0x87b08601.toInt(), 0x9b09e6ad.toInt(), 0x3b3ee593.toInt(), 0xe990fd5a.toInt(), 0x9e34d797.toInt(), 0x2cf0b7d9.toInt(), 0x022b8b51.toInt(), 0x96d5ac3a.toInt(), 0x017da67d.toInt(), 0xd1cf3ed6.toInt(), 0x7c7d2d28.toInt(), 0x1f9f25cf.toInt(), 0xadf2b89b.toInt(), 0x5ad6b472.toInt(), 0x5a88f54c.toInt(), 0xe029ac71.toInt(), 0xe019a5e6.toInt(), 0x47b0acfd.toInt(), 0xed93fa9b.toInt(), 0xe8d3c48d.toInt(), 0x283b57cc.toInt(), 0xf8d56629.toInt(), 0x79132e28.toInt(), 0x785f0191.toInt(), 0xed756055.toInt(), 0xf7960e44.toInt(), 0xe3d35e8c.toInt(), 0x15056dd4.toInt(), 0x88f46dba.toInt(), 0x03a16125.toInt(), 0x0564f0bd.toInt(), 0xc3eb9e15.toInt(), 0x3c9057a2.toInt(), 0x97271aec.toInt(), 0xa93a072a.toInt(), 0x1b3f6d9b.toInt(), 0x1e6321f5.toInt(), 0xf59c66fb.toInt(), 0x26dcf319.toInt(), 0x7533d928.toInt(), 0xb155fdf5.toInt(), 0x03563482.toInt(), 0x8aba3cbb.toInt(), 0x28517711.toInt(), 0xc20ad9f8.toInt(), 0xabcc5167.toInt(), 0xccad925f.toInt(), 0x4de81751.toInt(), 0x3830dc8e.toInt(), 0x379d5862.toInt(), 0x9320f991.toInt(), 0xea7a90c2.toInt(), 0xfb3e7bce.toInt(), 0x5121ce64.toInt(), 0x774fbe32.toInt(), 0xa8b6e37e.toInt(), 0xc3293d46.toInt(), 0x48de5369.toInt(), 0x6413e680.toInt(), 0xa2ae0810.toInt(), 0xdd6db224.toInt(), 0x69852dfd.toInt(), 0x09072166.toInt(), 0xb39a460a.toInt(), 0x6445c0dd.toInt(), 0x586cdecf.toInt(), 0x1c20c8ae.toInt(), 0x5bbef7dd.toInt(), 0x1b588d40.toInt(), 0xccd2017f.toInt(), 0x6bb4e3bb.toInt(), 0xdda26a7e.toInt(), 0x3a59ff45.toInt(), 0x3e350a44.toInt(), 0xbcb4cdd5.toInt(), 0x72eacea8.toInt(), 0xfa6484bb.toInt(), 0x8d6612ae.toInt(), 0xbf3c6f47.toInt(), 0xd29be463.toInt(), 0x542f5d9e.toInt(), 0xaec2771b.toInt(), 0xf64e6370.toInt(), 0x740e0d8d.toInt(), 0xe75b1357.toInt(), 0xf8721671.toInt(), 0xaf537d5d.toInt(), 0x4040cb08.toInt(), 0x4eb4e2cc.toInt(), 0x34d2466a.toInt(), 0x0115af84.toInt(), 0xe1b00428.toInt(), 0x95983a1d.toInt(), 0x06b89fb4.toInt(), 0xce6ea048.toInt(), 0x6f3f3b82.toInt(), 0x3520ab82.toInt(), 0x011a1d4b.toInt(), 0x277227f8.toInt(), 0x611560b1.toInt(), 0xe7933fdc.toInt(), 0xbb3a792b.toInt(), 0x344525bd.toInt(), 0xa08839e1.toInt(), 0x51ce794b.toInt(), 0x2f32c9b7.toInt(), 0xa01fbac9.toInt(), 0xe01cc87e.toInt(), 0xbcc7d1f6.toInt(), 0xcf0111c3.toInt(), 0xa1e8aac7.toInt(), 0x1a908749.toInt(), 0xd44fbd9a.toInt(), 0xd0dadecb.toInt(), 0xd50ada38.toInt(), 0x0339c32a.toInt(), 0xc6913667.toInt(), 0x8df9317c.toInt(), 0xe0b12b4f.toInt(), 0xf79e59b7.toInt(), 0x43f5bb3a.toInt(), 0xf2d519ff.toInt(), 0x27d9459c.toInt(), 0xbf97222c.toInt(), 0x15e6fc2a.toInt(), 0x0f91fc71.toInt(), 0x9b941525.toInt(), 0xfae59361.toInt(), 0xceb69ceb.toInt(), 0xc2a86459.toInt(), 0x12baa8d1.toInt(), 0xb6c1075e.toInt(), 0xe3056a0c.toInt(), 0x10d25065.toInt(), 0xcb03a442.toInt(), 0xe0ec6e0e.toInt(), 0x1698db3b.toInt(), 0x4c98a0be.toInt(), 0x3278e964.toInt(), 0x9f1f9532.toInt(), 0xe0d392df.toInt(), 0xd3a0342b.toInt(), 0x8971f21e.toInt(), 0x1b0a7441.toInt(), 0x4ba3348c.toInt(), 0xc5be7120.toInt(), 0xc37632d8.toInt(), 0xdf359f8d.toInt(), 0x9b992f2e.toInt(), 0xe60b6f47.toInt(), 0x0fe3f11d.toInt(), 0xe54cda54.toInt(), 0x1edad891.toInt(), 0xce6279cf.toInt(), 0xcd3e7e6f.toInt(), 0x1618b166.toInt(), 0xfd2c1d05.toInt(), 0x848fd2c5.toInt(), 0xf6fb2299.toInt(), 0xf523f357.toInt(), 0xa6327623.toInt(), 0x93a83531.toInt(), 0x56cccd02.toInt(), 0xacf08162.toInt(), 0x5a75ebb5.toInt(), 0x6e163697.toInt(), 0x88d273cc.toInt(), 0xde966292.toInt(), 0x81b949d0.toInt(), 0x4c50901b.toInt(), 0x71c65614.toInt(), 0xe6c6c7bd.toInt(), 0x327a140a.toInt(), 0x45e1d006.toInt(), 0xc3f27b9a.toInt(), 0xc9aa53fd.toInt(), 0x62a80f00.toInt(), 0xbb25bfe2.toInt(), 0x35bdd2f6.toInt(), 0x71126905.toInt(), 0xb2040222.toInt(), 0xb6cbcf7c.toInt(), 0xcd769c2b.toInt(), 0x53113ec0.toInt(), 0x1640e3d3.toInt(), 0x38abbd60.toInt(), 0x2547adf0.toInt(), 0xba38209c.toInt(), 0xf746ce76.toInt(), 0x77afa1c5.toInt(), 0x20756060.toInt(), 0x85cbfe4e.toInt(), 0x8ae88dd8.toInt(), 0x7aaaf9b0.toInt(), 0x4cf9aa7e.toInt(), 0x1948c25c.toInt(), 0x02fb8a8c.toInt(), 0x01c36ae4.toInt(), 0xd6ebe1f9.toInt(), 0x90d4f869.toInt(), 0xa65cdea0.toInt(), 0x3f09252d.toInt(), 0xc208e69f.toInt(), 0xb74e6132.toInt(), 0xce77e25b.toInt(), 0x578fdfe3.toInt(), 0x3ac372e6.toInt())
     )
 
-    fun run(block: Long) {
+    init {
+        if (!initialized) {
+            setup()
+        }
+    }
 
-        val s: Array<Array<Int>> = Array(4) { Array(256) { 0 } }
+    fun setup() {
         var key_pos = 0
-        var key = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8)
+        var key = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8)
         var key_size = 8
         var k: Int
         for (i in 0..17) {
             k = 0
             for (j in 0..3) {
-                k = (k shl 8) or key[key_pos]
+                k = (k shl 8) or (key[key_pos].toInt() and 0xFF)
                 key_pos = (key_pos + 1) % key_size
             }
             p[i] = p[i] xor k
         }
 
-        var L: Int = 0
-        var R: Int = 0
+        var L = 0
+        var R = 0
         for (i in 0..17 step 2) {
-            val l_r_pair = encrypt(s, p.toTypedArray(), L, R)
+            val l_r_pair = encrypt(s, p, L, R)
             L = l_r_pair.first
             R = l_r_pair.second
 
@@ -47,13 +52,36 @@ object BlowfishEngine {
 
         for (i in 0..3) {
             for (j in 0..255 step 2) {
-                val l_r_pair = encrypt(s, p.toTypedArray(), L, R)
+                val l_r_pair = encrypt(s, p, L, R)
                 L = l_r_pair.first
                 R = l_r_pair.second
 
                 s[i][j] = L
-                s[i][j + 1] = L
+                s[i][j + 1] = R
             }
         }
+    }
+    fun encrypt(input: Long): Long {
+        val L: Int = (input ushr 32).toInt()
+        val R: Int = input.toInt()
+
+        val result = encrypt(s, p, L, R)
+
+        val finalL = (result.first.toLong() and 0xFFFFFFFFL) shl 32
+        val finalR = result.second.toLong() and 0xFFFFFFFFL
+
+        return finalL or finalR
+    }
+
+    fun decrypt(input: Long): Long {
+        val L: Int = (input ushr 32).toInt()
+        val R: Int = input.toInt()
+
+        val result = decrypt(s, p, L, R)
+
+        val finalL = (result.first.toLong() and 0xFFFFFFFFL) shl 32
+        val finalR = result.second.toLong() and 0xFFFFFFFFL
+
+        return finalL or finalR
     }
 }

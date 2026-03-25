@@ -4,7 +4,7 @@ package com.example.blowfish.blowfish
  * Encryption function for the BlowFish cipher
  * Takes 32-bit halves from the original 64-bit message and encrypts them over 16 rounds
  */
-fun encrypt(s: Array<Array<Int>>, p: Array<Int>, leftHalf: Int, rightHalf: Int): Pair<Int, Int> {
+fun encrypt(s: Array<IntArray>, p: IntArray, leftHalf: Int, rightHalf: Int): Pair<Int, Int> {
     var L = leftHalf
     var R = rightHalf
 
