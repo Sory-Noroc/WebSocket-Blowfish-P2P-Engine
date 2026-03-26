@@ -10,21 +10,23 @@ class BlowfishEngineTest {
     @Test
     fun `test encryption and decryption symmetry`() {
         val originalValue = Random.nextLong()
+        val bfTester = BlowfishEngine()
 
-        val encryptedValue = BlowfishEngine.encrypt(originalValue)
+        val encryptedValue = bfTester.encrypt(originalValue)
 
         assertNotEquals(originalValue, encryptedValue, "Valoarea criptata nu trebuie sa fie identica cu cea originala!")
 
-        val decryptedValue = BlowfishEngine.decrypt(encryptedValue)
+        val decryptedValue = bfTester.decrypt(encryptedValue)
 
         assertEquals(originalValue, decryptedValue, "Decriptarea trebuie sa returneze valoarea originala!")
     }
 
     @Test
     fun `test specific known value`() {
-        val originalValue = 4444L
-        val encryptedValue = BlowfishEngine.encrypt(originalValue)
-        val decryptedValue = BlowfishEngine.decrypt(encryptedValue)
+        val originalValue = 1234L
+        val bfTester = BlowfishEngine()
+        val encryptedValue = bfTester.encrypt(originalValue)
+        val decryptedValue = bfTester.decrypt(encryptedValue)
 
         assertEquals(originalValue, decryptedValue)
     }

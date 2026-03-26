@@ -1,7 +1,7 @@
 package com.example.blowfish.blowfish
 
 
-object BlowfishEngine {
+class BlowfishEngine {
     var initialized = false
 
     val p = intArrayOf(
