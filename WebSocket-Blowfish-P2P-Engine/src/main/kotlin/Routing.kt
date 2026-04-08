@@ -1,6 +1,7 @@
 package com.example.blowfish
 
 import com.example.blowfish.blowfish.BlowfishEngine
+import com.example.blowfish.blowfish.MessageProcessor
 import com.example.blowfish.blowfish.utils
 import io.ktor.http.ContentType
 import io.ktor.server.application.*
@@ -15,13 +16,20 @@ import kotlin.time.Duration.Companion.seconds
 fun Application.configureRouting() {
     routing {
         get("/") {
-            val bfTester = BlowfishEngine()
-            val encryption = bfTester.encrypt(4444)
-            val decryption = bfTester.decrypt(encryption)
+            val key = "MySecretKey".toByteArray()
+            val bfTester = BlowfishEngine(key)
+
+            val plaintext = "Hello! This is a very long message for verifying Kotlin padding."
+
+            val encryptedBlocks = bfTester.encryptMessage(plaintext, bfTester)
+
+            val decryptedText = bfTester.decryptMessage(encryptedBlocks, bfTester)
+
             val responsePayload = """
                 App is UP!
-                Encrypted: $encryption
-                Decrypted: $decryption
+                Original: $plaintext
+                Encrypted Blocks: ${encryptedBlocks.joinToString(", ") { it.toULong().toString(16) }}
+                Decrypted: $decryptedText
             """.trimIndent()
 
             call.respondText(responsePayload)
