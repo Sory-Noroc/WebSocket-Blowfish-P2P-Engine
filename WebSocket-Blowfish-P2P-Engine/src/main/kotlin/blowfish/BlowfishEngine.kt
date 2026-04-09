@@ -1,6 +1,8 @@
 package com.example.blowfish.blowfish
 
-class BlowfishEngine(private val key: Long) {
+
+class BlowfishEngine(private val key: ByteArray) {
+    var initialized = false
 
     val p = intArrayOf(
         0x243f6a88,         0x85a308d3.toInt(), 0x13198a2e,         0x03707344,
@@ -18,19 +20,19 @@ class BlowfishEngine(private val key: Long) {
     )
 
     init {
-        val byteKey = ByteArray(8)
-
-        for (i in 0..7) {
-            val shiftAmount = (7 - i) * 8
-            byteKey[i] = ((key ushr shiftAmount) and 0xFF).toByte()
+        require(key.isNotEmpty() && key.size <= 56) {
+            "Blowfish key must have between 1 and 56 Bytes"
         }
 
-        setup(byteKey)
+        if (!initialized) {
+            setup()
+        }
     }
 
-    fun setup(key: ByteArray) {
+    fun setup() {
         var key_pos = 0
-        var key_size = 8
+        var key_size = key.size
+
         var k: Int
         for (i in 0..17) {
             k = 0
@@ -62,6 +64,7 @@ class BlowfishEngine(private val key: Long) {
                 s[i][j + 1] = R
             }
         }
+        initialized = true
     }
     fun encrypt(input: Long): Long {
         val L: Int = (input ushr 32).toInt()
@@ -85,5 +88,82 @@ class BlowfishEngine(private val key: Long) {
         val finalR = result.second.toLong() and 0xFFFFFFFFL
 
         return finalL or finalR
+    }
+
+    private fun f(x: Int): Int {
+        val h = x
+        val d = h and 0xFF
+        val c = (h ushr 8) and 0xFF
+        val b = (h ushr 16) and 0xFF
+        val a = (h ushr 24) and 0xFF
+
+        var y = s[0][a]
+        y = (y + s[1][b])
+        y = y xor s[2][c]
+        y = (y + s[3][d])
+
+        return y
+    }
+
+    private fun encrypt(s: Array<IntArray>, p: IntArray, lIn: Int, rIn: Int): Pair<Int, Int> {
+        var L = lIn
+        var R = rIn
+
+        for (i in 0 until 16) {
+            L = L xor p[i]
+            R = f(L) xor R
+
+            // Swap L and R
+            val temp = L
+            L = R
+            R = temp
+        }
+
+        val temp = L
+        L = R
+        R = temp
+
+        R = R xor p[16]
+        L = L xor p[17]
+
+        return Pair(L, R)
+    }
+
+    private fun decrypt(s: Array<IntArray>, p: IntArray, lIn: Int, rIn: Int): Pair<Int, Int> {
+        var L = lIn
+        var R = rIn
+
+        for (i in 17 downTo 2) {
+            L = L xor p[i]
+            R = f(L) xor R
+
+            val temp = L
+            L = R
+            R = temp
+        }
+
+        val temp = L
+        L = R
+        R = temp
+
+        R = R xor p[1]
+        L = L xor p[0]
+
+        return Pair(L, R)
+    }
+
+    fun encryptMessage(message: String, engine: BlowfishEngine): List<Long> {
+        val messageBytes = message.toByteArray(Charsets.UTF_8)
+        val blocks = MessageProcessor.bytesToLongBlocks(messageBytes)
+
+        return blocks.map { block -> engine.encrypt(block) }
+    }
+
+    fun decryptMessage(encryptedBlocks: List<Long>, engine: BlowfishEngine): String {
+        val decryptedBlocks = encryptedBlocks.map { block -> engine.decrypt(block) }
+
+        val messageBytes = MessageProcessor.longBlocksToBytes(decryptedBlocks)
+
+        return String(messageBytes, Charsets.UTF_8)
     }
 }

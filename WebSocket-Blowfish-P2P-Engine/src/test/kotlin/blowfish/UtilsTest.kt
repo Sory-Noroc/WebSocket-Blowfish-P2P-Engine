@@ -14,7 +14,7 @@ class UtilsTest {
 
         val result = f(dummyS, x)
 
-        assertEquals(4, result, "Functia F nu combina corect octetii!")
+        assertEquals(4, result, "The F function does not combine the bytes correctly!")
     }
 
     @Test
@@ -29,7 +29,7 @@ class UtilsTest {
 
         val decryptedBlock = decrypt(dummyS, dummyP, encryptedBlock.first, encryptedBlock.second)
 
-        assertEquals(originalLeft, decryptedBlock.first, "Partea stanga (Left) nu s-a decriptat corect!")
-        assertEquals(originalRight, decryptedBlock.second, "Partea dreapta (Right) nu s-a decriptat corect!")
+        assertEquals(originalLeft, decryptedBlock.first, "The left side (Left) was not decrypted correctly!")
+        assertEquals(originalRight, decryptedBlock.second, "The right side was not decrypted correctly!")
     }
 }

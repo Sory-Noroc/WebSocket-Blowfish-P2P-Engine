@@ -9,22 +9,22 @@ class BlowfishEngineTest {
 
     @Test
     fun `test encryption and decryption symmetry`() {
+        val key = "SymmetricKey".toByteArray()
         val originalValue = Random.nextLong()
-        val key = 8970_2354L
         val bfTester = BlowfishEngine(key)
 
         val encryptedValue = bfTester.encrypt(originalValue)
 
-        assertNotEquals(originalValue, encryptedValue, "Valoarea criptata nu trebuie sa fie identica cu cea originala!")
+        assertNotEquals(originalValue, encryptedValue, "The encrypted value does not have to be identical to the original one!")
 
         val decryptedValue = bfTester.decrypt(encryptedValue)
 
-        assertEquals(originalValue, decryptedValue, "Decriptarea trebuie sa returneze valoarea originala!")
+        assertEquals(originalValue, decryptedValue, "Decryption must return the original value!")
     }
 
     @Test
     fun `test specific known value`() {
-        val key = 3644_6563L
+        val key = "SymmetricKey".toByteArray()
         val originalValue = 1234L
         val bfTester = BlowfishEngine(key)
         val encryptedValue = bfTester.encrypt(originalValue)

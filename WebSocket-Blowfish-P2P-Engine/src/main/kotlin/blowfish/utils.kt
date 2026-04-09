@@ -138,7 +138,7 @@ object utils {
         val cleanHex = piHexString.replace(Regex("[^a-fA-F0-9]"), "")
 
         if (cleanHex.length < 8336) {
-            throw IllegalArgumentException("String-ul nu are suficiente caractere. Ai nevoie de minim 8336 caractere hexazecimale.")
+            throw IllegalArgumentException("String doesn't have enough characters. You need at least 8336 hexadecimal characters.")
         }
 
         val pArray = IntArray(18)
