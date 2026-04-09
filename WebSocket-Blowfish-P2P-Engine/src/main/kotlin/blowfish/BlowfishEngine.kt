@@ -1,8 +1,6 @@
 package com.example.blowfish.blowfish
 
-
-class BlowfishEngine {
-    var initialized = false
+class BlowfishEngine(private val key: Long) {
 
     val p = intArrayOf(
         0x243f6a88,         0x85a308d3.toInt(), 0x13198a2e,         0x03707344,
@@ -20,14 +18,18 @@ class BlowfishEngine {
     )
 
     init {
-        if (!initialized) {
-            setup()
+        val byteKey = ByteArray(8)
+
+        for (i in 0..7) {
+            val shiftAmount = (7 - i) * 8
+            byteKey[i] = ((key ushr shiftAmount) and 0xFF).toByte()
         }
+
+        setup(byteKey)
     }
 
-    fun setup() {
+    fun setup(key: ByteArray) {
         var key_pos = 0
-        var key = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8)
         var key_size = 8
         var k: Int
         for (i in 0..17) {

@@ -15,7 +15,8 @@ import kotlin.time.Duration.Companion.seconds
 fun Application.configureRouting() {
     routing {
         get("/") {
-            val bfTester = BlowfishEngine()
+            val key = 12344321L
+            val bfTester = BlowfishEngine(key)
             val encryption = bfTester.encrypt(4444)
             val decryption = bfTester.decrypt(encryption)
             val responsePayload = """
