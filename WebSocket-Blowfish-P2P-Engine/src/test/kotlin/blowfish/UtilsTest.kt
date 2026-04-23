@@ -1,6 +1,6 @@
 package com.example.blowfish.blowfish
 
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
