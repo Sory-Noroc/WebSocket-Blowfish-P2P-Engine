@@ -1,38 +1,47 @@
 package com.example.blowfish
 
+import com.example.blowfish.connection.DiffieHellman
 import com.example.blowfish.blowfish.BlowfishEngine
-import com.example.blowfish.blowfish.MessageProcessor
-import com.example.blowfish.blowfish.utils
-import io.ktor.http.ContentType
+import connection.P2PMessage
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import java.time.Duration
-import kotlin.collections.flatten
-import kotlin.time.Duration.Companion.seconds
+import kotlinx.serialization.json.Json
+import java.math.BigInteger
 
-fun Application.configureRouting() {
+fun Application.configureP2P() {
     routing {
-        get("/") {
-            val key = "MySecretKey".toByteArray()
-            val bfTester = BlowfishEngine(key)
+        webSocket("/chat") {
+            val dh = DiffieHellman()
+            var blowfishEngine: BlowfishEngine? = null
 
-            val plaintext = "Hello! This is a very long message for verifying Kotlin padding."
+            val myPublicKey = dh.generatePublicKey()
+            send(Frame.Text(Json.encodeToString(P2PMessage.KeyExchange(myPublicKey.toString(16)))))
 
-            val encryptedBlocks = bfTester.encryptMessage(plaintext, bfTester)
+            for (frame in incoming) {
+                if (frame is Frame.Text) {
+                    val text = frame.readText()
+                    val message = Json.decodeFromString<P2PMessage>(text)
 
-            val decryptedText = bfTester.decryptMessage(encryptedBlocks, bfTester)
+                    when (message) {
+                        is P2PMessage.KeyExchange -> {
+                            val partnerPubKey = BigInteger(message.publicKeyHex, 16)
+                            val sharedSecret = dh.computeSharedSecret(partnerPubKey)
 
-            val responsePayload = """
-                App is UP!
-                Original: $plaintext
-                Encrypted Blocks: ${encryptedBlocks.joinToString(", ") { it.toULong().toString(16) }}
-                Decrypted: $decryptedText
-            """.trimIndent()
+                            blowfishEngine = BlowfishEngine(sharedSecret)
+                            println("Handshake complet! Conexiune securizata stabilita.")
+                        }
 
-            call.respondText(responsePayload)
+                        is P2PMessage.EncryptedChat -> {
+                            val engine = blowfishEngine
+                            if (engine != null) {
+                                println("Mesaj criptat primit: ${message.payloadHex}")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package blowfish
 
+import com.example.blowfish.connection.DiffieHellman
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.math.BigInteger
