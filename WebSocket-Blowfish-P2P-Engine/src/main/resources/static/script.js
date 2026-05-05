@@ -10,16 +10,7 @@ socket.onmessage = (event) => {
     try {
         const data = JSON.parse(event.data);
         console.log("Mesaj JSON primit:", data);
-
-        const type = data["$type"] || data["type"];
-
-        if (type && type.includes("DiscoveryResponse")) {
-            updatePartnersList(data.ips);
-        } else if (data.ips) { 
-            updatePartnersList(data.ips);
-        } else {
-            displayMessage("Server JSON", JSON.stringify(data));
-        }
+        displayMessage("Server JSON", JSON.stringify(data));
     } catch (e) {
         console.log("Mesaj text primit:", event.data);
         displayMessage("Server", event.data);
@@ -41,6 +32,7 @@ function updateStatus(text, className) {
 
 function displayMessage(sender, text) {
     const chatBox = document.getElementById("chat-messages");
+    if (!chatBox) return;
     const msgDiv = document.createElement("div");
     msgDiv.style.marginBottom = "10px";
     msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
@@ -65,7 +57,7 @@ function updatePartnersList(ips) {
     if (!list) return;
     
     list.innerHTML = "";
-    if (ips.length === 0) {
+    if (!ips || ips.length === 0) {
         list.innerHTML = '<li class="empty">Niciun partener găsit</li>';
         return;
     }
@@ -77,13 +69,11 @@ function updatePartnersList(ips) {
         li.onclick = () => selectPartner(ip);
         list.appendChild(li);
     });
-    logSecurity(`Scanare finalizată. S-au găsit ${ips.length} parteneri.`);
 }
 
 function selectPartner(ip) {
     document.getElementById("target-ip").textContent = ` -> ${ip}`;
     logSecurity(`Partener selectat: ${ip}. Se inițiază handshake...`);
-    // Placeholder pentru viitor: socket.send(JSON.stringify({type: "CONNECT", target: ip}));
 }
 
 document.getElementById("send-btn").onclick = () => {
@@ -95,14 +85,24 @@ document.getElementById("send-btn").onclick = () => {
     }
 };
 
-document.getElementById("scan-btn").onclick = () => {
+document.getElementById("scan-btn").onclick = async () => {
     const subnetInput = document.getElementById("subnet-input");
-    const subnet = subnetInput ? subnetInput.value : "192.168.1.0/24";
+    const subnet = subnetInput ? subnetInput.value : "192.168.0.0/24";
     logSecurity(`Scanare pornită pentru ${subnet}...`);
-    
-    const request = {
-        "$type": "com.example.blowfish.connection.P2PMessage.DiscoveryRequest",
-        "subnet": subnet
-    };
-    socket.send(JSON.stringify(request));
+
+    const list = document.getElementById("partners-list");
+    list.innerHTML = "Se scanează...";
+
+    try {
+        const response = await fetch(`/ips?subnet=${encodeURIComponent(subnet)}`);
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        
+        const ips = await response.json();
+        updatePartnersList(ips);
+        logSecurity(`Scanare finalizată. S-au găsit ${ips.length} parteneri.`);
+    } catch (error) {
+        console.error("Eroare la scanare:", error);
+        logSecurity(`Eroare la scanare: ${error.message}`);
+        list.innerHTML = '<li class="empty">Eroare la scanare</li>';
+    }
 };

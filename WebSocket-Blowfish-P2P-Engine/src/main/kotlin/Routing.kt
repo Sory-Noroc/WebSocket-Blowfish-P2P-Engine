@@ -2,6 +2,7 @@ package com.example.blowfish
 
 import com.example.blowfish.connection.DiffieHellman
 import com.example.blowfish.blowfish.BlowfishEngine
+import com.example.blowfish.connection.NetworkUtils
 import com.example.blowfish.connection.P2PMessage
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -9,16 +10,18 @@ import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.serialization.json.Json
 import java.math.BigInteger
-
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 
 fun Application.configureRouting() {
-    println("Configurarea rutelor pentru fisiere statice...")
     routing {
-        get("/test") {
-            call.respondText("Serverul Ktor este pornit si rutele sunt active!")
+        get("/ips") {
+            val subnet: String = call.request.queryParameters["subnet"] ?: "0.0.0.0/0"
+            log.info("Scanare subnet solicitată: $subnet")
+            val ips = NetworkUtils.discoverPeers(subnet)
+            call.respond(ips)
         }
+
         staticResources("/", "static", index = "index.html")
     }
 }
@@ -51,7 +54,10 @@ fun Application.configureP2P() {
                             if (engine != null) {
                                 println("Mesaj criptat primit: ${message.payloadHex}")
                             }
-                        } else -> {}
+                        }
+                        else -> {
+                            // Alte tipuri de mesaje P2P
+                        }
                     }
                 }
             }
