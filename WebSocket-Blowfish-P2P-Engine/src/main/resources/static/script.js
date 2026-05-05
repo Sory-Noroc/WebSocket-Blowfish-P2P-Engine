@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logSecurity("Interfață inițializată. Folosiți Scanare pentru a găsi parteneri.");
 
     setInterval(pollMessages, 2000);
+    setInterval(pollStatus, 3000);
 });
 
 async function pollMessages() {
@@ -12,12 +13,56 @@ async function pollMessages() {
         if (response.ok) {
             const messages = await response.json();
             messages.forEach(msg => {
-                displayMessage("Partener", msg);
-                logSecurity("Mesaj nou primit de la partener.");
+                if (msg.startsWith("DOWNLOAD_READY:")) {
+                    const fileName = msg.split(":")[1];
+                    displayFileDownload(fileName);
+                } else {
+                    displayMessage("Partener", msg);
+                }
             });
         }
+    } catch (e) { console.error(e); }
+}
+
+function displayFileDownload(fileName) {
+    const chatBox = document.getElementById("chat-messages");
+    const msgDiv = document.createElement("div");
+
+    msgDiv.style.cssText = "background: #1e272e; border-left: 4px solid #00d2d3; padding: 12px; margin: 8px 0; border-radius: 5px; color: white;";
+
+    msgDiv.innerHTML = `
+        <div style="margin-bottom: 8px;"><strong>📂 Fișier primit:</strong> ${fileName}</div>
+        <a href="/download" target="_blank" 
+           style="background: #00d2d3; color: #222; padding: 5px 15px; text-decoration: none; border-radius: 3px; font-weight: bold; font-size: 13px;">
+           DESCARCĂ FIȘIER
+        </a>
+    `;
+
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    logSecurity(`Fisierul ${fileName} este gata pentru descarcare.`);
+}
+
+async function pollStatus() {
+    try {
+        const response = await fetch('/status');
+        if (response.ok) {
+            const status = await response.json();
+            document.getElementById("my-pub-key").textContent = status.myPublicKey;
+            document.getElementById("partner-pub-key").textContent = status.partnerPublicKey;
+            
+            if (status.connected) {
+                updateStatus("Conectat", "status-online");
+            } else {
+                updateStatus("Așteptare conexiune", "status-offline");
+            }
+
+            if (status.partnerPublicKey !== "N/A") {
+                document.getElementById("shared-secret").textContent = "Generat (Criptare Activă)";
+            }
+        }
     } catch (e) {
-        console.error("Eroare la polling mesaje:", e);
+        console.error("Eroare la polling status:", e);
     }
 }
 
@@ -108,6 +153,34 @@ document.getElementById("send-btn").onclick = async () => {
             logSecurity(`Eroare la trimitere: ${e.message}`);
         }
     }
+};
+
+document.getElementById("file-input").onchange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    logSecurity(`Se trimite fișierul: ${file.name}...`);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch('/send-file', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            logSecurity(`Fișierul ${file.name} a fost trimis.`);
+            displayMessage("Eu", `Fișier trimis: ${file.name}`);
+        } else {
+            logSecurity(`Eroare la trimitere fișier: ${response.statusText}`);
+        }
+    } catch (e) {
+        logSecurity(`Eroare rețea la trimitere fișier: ${e.message}`);
+    }
+    
+    // Reset input
+    event.target.value = "";
 };
 
 document.getElementById("scan-btn").onclick = async () => {

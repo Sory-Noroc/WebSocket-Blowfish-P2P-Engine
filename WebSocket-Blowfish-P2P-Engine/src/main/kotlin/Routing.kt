@@ -2,6 +2,8 @@ package com.example.blowfish
 
 import com.example.blowfish.connection.NetworkUtils
 import com.example.blowfish.connection.P2PConnectionManager
+import com.example.blowfish.connection.P2PStatus
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
@@ -40,6 +42,56 @@ fun Application.configureRouting() {
             call.respond(messages)
         }
 
+        get("/status") {
+            val status = P2PStatus(
+                myPublicKey = P2PConnectionManager.myPublicKey,
+                partnerPublicKey = P2PConnectionManager.partnerPublicKey ?: "N/A",
+                connected = (P2PConnectionManager.activeSession != null)
+            )
+            call.respond(status)
+        }
+
+        post("/send-file") {
+            val multipart = call.receiveMultipart()
+            var fileName = ""
+            var fileBytes: ByteArray? = null
+
+            multipart.forEachPart { part ->
+                if (part is PartData.FileItem) {
+                    fileName = part.originalFileName ?: "file"
+                    fileBytes = part.streamProvider().readBytes()
+                }
+                part.dispose()
+            }
+
+            fileBytes?.let { bytes ->
+                log.info("UI a trimis fisier pentru partener: $fileName")
+                P2PConnectionManager.sendFile(fileName, bytes)
+                call.respondText("Fisier trimis")
+            } ?: run {
+                call.respond(io.ktor.http.HttpStatusCode.BadRequest, "Niciun fisier selectat")
+            }
+        }
+
+        get("/download") {
+            val fileData = P2PConnectionManager.lastReceivedFileData
+            val fileName = P2PConnectionManager.lastReceivedFileName
+
+            if (fileData != null) {
+                log.info("Descărcare solicitată pentru: $fileName")
+
+                call.response.header(
+                    io.ktor.http.HttpHeaders.ContentDisposition,
+                    io.ktor.http.ContentDisposition.Attachment
+                        .withParameter(io.ktor.http.ContentDisposition.Parameters.FileName, fileName)
+                        .toString()
+                )
+                call.respondBytes(fileData)
+            } else {
+                call.respond(io.ktor.http.HttpStatusCode.NotFound, "Eroare: Niciun fișier primit recent.")
+            }
+        }
+
         staticResources("/", "static", index = "index.html")
     }
 }
@@ -49,15 +101,9 @@ fun Application.configureP2P() {
         webSocket("/chat") {
             P2PConnectionManager.activeSession = this
             println("Un partener s-a conectat la noi.")
-            
+
             try {
-                for (frame in incoming) {
-                    if (frame is Frame.Text) {
-                        val text = frame.readText()
-                        P2PConnectionManager.incomingMessages.add("Partner: $text")
-                        println("Mesaj primit prin /chat: $text")
-                    }
-                }
+                P2PConnectionManager.handleIncomingMessages(this)
             } catch (e: Exception) {
                 println("Eroare în sesiunea /chat: ${e.message}")
             } finally {
