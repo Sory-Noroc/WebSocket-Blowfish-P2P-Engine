@@ -1,9 +1,11 @@
 package com.example.blowfish.connection
 
+import java.net.InetAddress
+
 class NetworkUtils {
     companion object {
         fun discoverPeers(subnet: String): List<String> {
-            println("Se scaneaza reteaua $subnet pentru parteneri...")
+            println("Se scanează rețeaua $subnet pentru parteneri...")
             val peers = mutableListOf<String>()
 
             try {
@@ -19,10 +21,17 @@ class NetworkUtils {
                     }
                 }
             } catch (e: Exception) {
-                println("Eroare la scanare: Asigura-te că nmap este instalat!")
+                println("Eroare la scanare nmap: ${e.message}. Verificăm fallback local...")
+                try {
+                    val localIp = InetAddress.getLocalHost().hostAddress
+                    peers.add(localIp)
+                    peers.add("127.0.0.1")
+                } catch (ex: Exception) {
+                    peers.add("127.0.0.1")
+                }
             }
 
-            return peers
+            return peers.distinct()
         }
     }
 }

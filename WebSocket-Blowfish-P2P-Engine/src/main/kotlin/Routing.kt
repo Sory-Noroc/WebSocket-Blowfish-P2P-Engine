@@ -2,7 +2,7 @@ package com.example.blowfish
 
 import com.example.blowfish.connection.DiffieHellman
 import com.example.blowfish.blowfish.BlowfishEngine
-import connection.P2PMessage
+import com.example.blowfish.connection.P2PMessage
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
@@ -46,7 +46,7 @@ fun Application.configureP2P() {
                             if (engine != null) {
                                 println("Mesaj criptat primit: ${message.payloadHex}")
                             }
-                        }
+                        } else -> {}
                     }
                 }
             }

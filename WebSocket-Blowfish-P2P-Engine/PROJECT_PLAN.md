@@ -9,9 +9,9 @@ Acest document conține pașii detaliați pentru realizarea sistemului de comuni
 - [ ] **Sistem de Notificări:** Toast-uri/Alerte pentru status conexiune (Handshake, File Received).
 
 ## 2. Descoperire și Conectivitate (Network)
-- [ ] **Trigger Scanare:** Buton în UI care apelează `NetworkUtils.discoverPeers`.
-- [ ] **Afișare Dinamică:** Popularea listei de IP-uri găsite în interfață.
-- [ ] **Inițiere Conexiune:** Posibilitatea de a da click pe un IP pentru a deschide un canal de comunicare.
+- [x] **Trigger Scanare:** Buton în UI care apelează `NetworkUtils.discoverPeers`.
+- [x] **Afișare Dinamică:** Popularea listei de IP-uri găsite în interfață.
+- [x] **Initiere Conexiune:** Posibilitatea de a da click pe un IP pentru a pregăti canalul de comunicare.
 
 ## 3. Securitate și Criptare (Blowfish & DH)
 - [ ] **Handshake Diffie-Hellman:** 

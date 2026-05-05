@@ -8,6 +8,11 @@ import io.ktor.websocket.*
 import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
+import com.example.blowfish.connection.NetworkUtils
+import com.example.blowfish.connection.P2PMessage
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+
 fun Application.configureSockets() {
     install(WebSockets) {
         pingPeriod = 15.seconds
@@ -20,9 +25,21 @@ fun Application.configureSockets() {
             for (frame in incoming) {
                 if (frame is Frame.Text) {
                     val text = frame.readText()
-                    outgoing.send(Frame.Text("YOU SAID: $text"))
-                    if (text.equals("bye", ignoreCase = true)) {
-                        close(CloseReason(CloseReason.Codes.NORMAL, "Client said BYE"))
+                    try {
+                        val message = Json.decodeFromString<P2PMessage>(text)
+                        when (message) {
+                            is P2PMessage.DiscoveryRequest -> {
+                                val ips = NetworkUtils.discoverPeers(message.subnet)
+                                val response = P2PMessage.DiscoveryResponse(ips)
+                                outgoing.send(Frame.Text(Json.encodeToString(response)))
+                            }
+                            else -> {
+                                outgoing.send(Frame.Text("Echo: $text"))
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Fallback for non-JSON messages (like simple text for testing)
+                        outgoing.send(Frame.Text("Server: $text"))
                     }
                 }
             }
