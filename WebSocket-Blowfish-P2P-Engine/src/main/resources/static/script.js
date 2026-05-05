@@ -1,26 +1,25 @@
-const socket = new WebSocket(`ws://${window.location.host}/ws`);
 
-socket.onopen = () => {
-    console.log("Conectat la serverul Ktor");
-    updateStatus("Online", "status-online");
-    logSecurity("Conexiune WebSocket stabilită.");
-};
+document.addEventListener("DOMContentLoaded", () => {
+    updateStatus("Sistem P2P Pornit", "status-online");
+    logSecurity("Interfață inițializată. Folosiți Scanare pentru a găsi parteneri.");
 
-socket.onmessage = (event) => {
+    setInterval(pollMessages, 2000);
+});
+
+async function pollMessages() {
     try {
-        const data = JSON.parse(event.data);
-        console.log("Mesaj JSON primit:", data);
-        displayMessage("Server JSON", JSON.stringify(data));
+        const response = await fetch('/messages');
+        if (response.ok) {
+            const messages = await response.json();
+            messages.forEach(msg => {
+                displayMessage("Partener", msg);
+                logSecurity("Mesaj nou primit de la partener.");
+            });
+        }
     } catch (e) {
-        console.log("Mesaj text primit:", event.data);
-        displayMessage("Server", event.data);
+        console.error("Eroare la polling mesaje:", e);
     }
-};
-
-socket.onclose = () => {
-    updateStatus("Deconectat", "status-offline");
-    logSecurity("Conexiune WebSocket închisă.");
-};
+}
 
 function updateStatus(text, className) {
     const statusEl = document.getElementById("connection-status");
@@ -71,24 +70,50 @@ function updatePartnersList(ips) {
     });
 }
 
-function selectPartner(ip) {
+async function selectPartner(ip) {
     document.getElementById("target-ip").textContent = ` -> ${ip}`;
-    logSecurity(`Partener selectat: ${ip}. Se inițiază handshake...`);
+    logSecurity(`Inițiere conexiune P2P către: ${ip}...`);
+    
+    try {
+        const response = await fetch('/connect', {
+            method: 'POST',
+            body: ip
+        });
+        if (response.ok) {
+            logSecurity(`Cerere de conectare trimisă către ${ip}.`);
+        } else {
+            logSecurity(`Eroare la conectare: ${response.statusText}`);
+        }
+    } catch (e) {
+        logSecurity(`Eroare rețea la conectare: ${e.message}`);
+    }
 }
 
-document.getElementById("send-btn").onclick = () => {
+document.getElementById("send-btn").onclick = async () => {
     const input = document.getElementById("message-input");
     if (input && input.value) {
-        socket.send(input.value);
-        displayMessage("Eu", input.value);
-        input.value = "";
+        const text = input.value;
+        try {
+            const response = await fetch('/send', {
+                method: 'POST',
+                body: text
+            });
+            if (response.ok) {
+                displayMessage("Eu", text);
+                input.value = "";
+            } else {
+                logSecurity("Eroare: Nu există o conexiune activă.");
+            }
+        } catch (e) {
+            logSecurity(`Eroare la trimitere: ${e.message}`);
+        }
     }
 };
 
 document.getElementById("scan-btn").onclick = async () => {
     const subnetInput = document.getElementById("subnet-input");
     const subnet = subnetInput ? subnetInput.value : "192.168.0.0/24";
-    logSecurity(`Scanare pornită pentru ${subnet}...`);
+    logSecurity(`Scanare rețea pornită pentru ${subnet}...`);
 
     const list = document.getElementById("partners-list");
     list.innerHTML = "Se scanează...";
