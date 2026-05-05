@@ -11,7 +11,6 @@ socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log("Mesaj JSON primit:", data);
 
-        // Verificăm tipul mesajului (folosind formatul polimorfic de la kotlinx.serialization)
         const type = data["$type"] || data["type"];
 
         if (type && type.includes("DiscoveryResponse")) {

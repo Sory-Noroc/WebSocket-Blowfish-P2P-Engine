@@ -1,34 +1,34 @@
 package com.example.blowfish.connection
 
-import java.net.InetAddress
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class NetworkUtils {
     companion object {
         fun discoverPeers(subnet: String): List<String> {
-            println("Se scanează rețeaua $subnet pentru parteneri...")
+            println("Se scanează rețeaua $subnet folosind nmap pentru portul 8080...")
             val peers = mutableListOf<String>()
 
             try {
+                // nmap -p 8080 --open <subnet>
+                // Exemplu subnet: 192.168.1.0/24
                 val process = ProcessBuilder("nmap", "-p", "8080", "--open", subnet).start()
-                val reader = process.inputStream.bufferedReader()
+                val reader = BufferedReader(InputStreamReader(process.inputStream))
 
                 var line: String?
                 while (reader.readLine().also { line = it } != null) {
+                    // Nmap scan report for 192.168.1.15
                     if (line!!.contains("Nmap scan report for")) {
-                        val rawIp = line!!.substringAfter("for ").trim()
-                        val ip = if (rawIp.contains("(")) rawIp.substringAfter("(").substringBefore(")") else rawIp
+                        val parts = line!!.split(" ")
+                        val ip = parts.last().replace("(", "").replace(")", "")
                         peers.add(ip)
+                        println("Partener găsit: $ip")
                     }
                 }
+                process.waitFor()
             } catch (e: Exception) {
-                println("Eroare la scanare nmap: ${e.message}. Verificăm fallback local...")
-                try {
-                    val localIp = InetAddress.getLocalHost().hostAddress
-                    peers.add(localIp)
-                    peers.add("127.0.0.1")
-                } catch (ex: Exception) {
-                    peers.add("127.0.0.1")
-                }
+                println("Eroare la execuția nmap: ${e.message}")
+                println("Asigură-te că nmap este în PATH și poate fi executat.")
             }
 
             return peers.distinct()
