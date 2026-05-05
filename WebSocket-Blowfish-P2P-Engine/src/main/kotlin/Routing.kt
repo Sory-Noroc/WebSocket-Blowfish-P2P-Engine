@@ -11,10 +11,15 @@ import kotlinx.serialization.json.Json
 import java.math.BigInteger
 
 import io.ktor.server.http.content.*
+import io.ktor.server.response.*
 
 fun Application.configureRouting() {
+    println("Configurarea rutelor pentru fisiere statice...")
     routing {
-        staticResources("/", "static")
+        get("/test") {
+            call.respondText("Serverul Ktor este pornit si rutele sunt active!")
+        }
+        staticResources("/", "static", index = "index.html")
     }
 }
 
