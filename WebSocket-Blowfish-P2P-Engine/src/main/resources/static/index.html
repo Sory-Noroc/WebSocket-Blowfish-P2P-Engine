@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blowfish P2P Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Coloana 1: Parteneri -->
+        <aside class="partners-panel">
+            <h2>Parteneri</h2>
+            <div class="network-controls">
+                <input type="text" id="subnet-input" value="192.168.1.0/24">
+                <button id="scan-btn">Scanare Retea</button>
+            </div>
+            <ul id="partners-list">
+                <!-- IP-urile vor apărea aici -->
+                <li class="empty">Niciun partener găsit</li>
+            </ul>
+        </aside>
+
+        <!-- Coloana 2: Chat -->
+        <main class="chat-panel">
+            <header>
+                <h2>Chat Securizat <span id="target-ip"></span></h2>
+                <div id="connection-status" class="status-offline">Deconectat</div>
+            </header>
+            <div id="chat-messages">
+                <!-- Mesajele vor apărea aici -->
+            </div>
+            <div class="chat-controls">
+                <input type="text" id="message-input" placeholder="Scrie un mesaj...">
+                <button id="send-btn">Trimite</button>
+                <label for="file-input" class="file-label">📎</label>
+                <input type="file" id="file-input" style="display: none;">
+            </div>
+        </main>
+
+        <!-- Coloana 3: Securitate -->
+        <aside class="security-panel">
+            <h2>Securitate</h2>
+            <div class="security-info">
+                <label>Cheie Publică Proprie:</label>
+                <code id="my-pub-key">N/A</code>
+                
+                <label>Cheie Publică Partener:</label>
+                <code id="partner-pub-key">N/A</code>
+                
+                <label>Shared Secret (Blowfish Key):</label>
+                <code id="shared-secret">N/A</code>
+            </div>
+            <div class="encryption-logs">
+                <h3>Log-uri Criptare</h3>
+                <div id="log-container"></div>
+            </div>
+        </aside>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

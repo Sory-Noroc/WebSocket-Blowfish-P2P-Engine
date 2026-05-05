@@ -10,6 +10,14 @@ import io.ktor.websocket.*
 import kotlinx.serialization.json.Json
 import java.math.BigInteger
 
+import io.ktor.server.http.content.*
+
+fun Application.configureRouting() {
+    routing {
+        staticResources("/", "static")
+    }
+}
+
 fun Application.configureP2P() {
     routing {
         webSocket("/chat") {

@@ -3,9 +3,9 @@
 Acest document conține pașii detaliați pentru realizarea sistemului de comunicare securizat.
 
 ## 1. Infrastructură Web & UI (Ktor + HTML/JS)
-- [ ] **Configurare Servire Fișiere Statice:** Setarea Ktor pentru a servi HTML/JS din folderul `resources`.
-- [ ] **Layout Principal:** Structură cu 3 coloane (Parteneri, Chat, Securitate).
-- [ ] **Integrare Frontend-Backend:** Conectarea paginii web la serverul Ktor prin WebSockets.
+- [x] **Configurare Servire Fișiere Statice:** Setarea Ktor pentru a servi HTML/JS din folderul `resources`.
+- [x] **Layout Principal:** Structură cu 3 coloane (Parteneri, Chat, Securitate).
+- [x] **Integrare Frontend-Backend:** Conectarea paginii web la serverul Ktor prin WebSockets.
 - [ ] **Sistem de Notificări:** Toast-uri/Alerte pentru status conexiune (Handshake, File Received).
 
 ## 2. Descoperire și Conectivitate (Network)

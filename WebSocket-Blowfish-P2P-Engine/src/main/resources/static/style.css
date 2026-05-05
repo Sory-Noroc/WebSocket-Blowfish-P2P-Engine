@@ -1,0 +1,150 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Panou Parteneri */
+.partners-panel {
+    width: 250px;
+    background: #ffffff;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.network-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#subnet-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#scan-btn {
+    padding: 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#partners-list {
+    list-style: none;
+    padding: 0;
+    overflow-y: auto;
+}
+
+#partners-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+#partners-list li:hover {
+    background-color: #f8f9fa;
+}
+
+/* Panou Chat */
+.chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.chat-panel header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #e5ddd5;
+}
+
+.chat-controls {
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+    background: #f0f2f5;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+#send-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 20px;
+}
+
+.file-label {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Panou Securitate */
+.security-panel {
+    width: 300px;
+    background: #343a40;
+    color: #fff;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.security-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+code {
+    background: #23272b;
+    padding: 5px;
+    word-break: break-all;
+    font-size: 0.8em;
+    border-radius: 3px;
+    color: #00ff00;
+}
+
+.encryption-logs {
+    flex: 1;
+    background: #23272b;
+    border-radius: 5px;
+    padding: 10px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 0.85em;
+}
+
+.status-offline { color: red; }
+.status-online { color: green; }
