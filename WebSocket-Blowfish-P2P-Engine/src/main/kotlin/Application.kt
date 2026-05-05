@@ -7,7 +7,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 
 fun main() {
-    val subnet = "192.168.1.0/24"
+    val subnet = "10.91.198.0/24"
     val discoveredIps = NetworkUtils.discoverPeers(subnet)
 
     if (discoveredIps.isNotEmpty()) {
